@@ -1,4 +1,9 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Eventos.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<EventosContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("EventosContext") ?? throw new InvalidOperationException("Connection string 'EventosContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
