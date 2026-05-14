@@ -51,9 +51,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Local)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Banner)
-            </td>
+                <td>
+                    <img src="@item.Banner" alt="Banner" style="width: 100px; height: auto;" />
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

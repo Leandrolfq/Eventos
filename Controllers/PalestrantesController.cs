@@ -49,42 +49,38 @@ namespace Eventos.Controllers
             return View();
         }
 
-        // POST: Palestrantes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,NomeCompleto,Empresa,Especialidade,MiniBiografia,Foto")] Palestrante palestrante)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(palestrante);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(palestrante);
-        }
+		// POST: Palestrantes/Create
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Create([Bind("Id,NomeCompleto,Empresa,Especialidade,MiniBiografia,Foto")] Palestrante palestrante, IFormFile fotoFile)
+		{
+			if (fotoFile != null && fotoFile.Length > 0)
+			{
+				var nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(fotoFile.FileName);
+				var caminho = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", nomeArquivo);
 
-        // GET: Palestrantes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+				using (var stream = new FileStream(caminho, FileMode.Create))
+				{
+					await fotoFile.CopyToAsync(stream);
+				}
 
-            var palestrante = await _context.Palestrante.FindAsync(id);
-            if (palestrante == null)
-            {
-                return NotFound();
-            }
-            return View(palestrante);
-        }
+				palestrante.Foto = "/images/" + nomeArquivo;
+			}
+			ModelState.Remove("Foto");
+			if (ModelState.IsValid)
+			{
+				_context.Add(palestrante);
+				await _context.SaveChangesAsync();
+				return RedirectToAction(nameof(Index));
+			}
+			return View(palestrante);
+		}
 
-        // POST: Palestrantes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+		// POST: Palestrantes/Edit/5
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,NomeCompleto,Empresa,Especialidade,MiniBiografia,Foto")] Palestrante palestrante)
         {

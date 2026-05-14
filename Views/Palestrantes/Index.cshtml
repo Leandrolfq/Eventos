@@ -46,7 +46,7 @@
                 @Html.DisplayFor(modelItem => item.MiniBiografia)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Foto)
+               <img src="@item.Foto" alt="Foto" style="width: 80px; height: auto; border-radius: 50%;" />
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
