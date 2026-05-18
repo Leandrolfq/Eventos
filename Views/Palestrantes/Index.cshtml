@@ -1,16 +1,12 @@
 ﻿@model IEnumerable<Eventos.Models.Palestrante>
-
 @{
     ViewData["Title"] = "Palestrantes";
 }
-
 <div class="fade-in" style="padding: 30px 0;">
-
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="persona3-title">Palestrantes</h1>
         <a asp-action="Create" class="persona3-btn">+ Novo Palestrante</a>
     </div>
-
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
         @foreach (var item in Model)
         {
@@ -18,14 +14,26 @@
                 <div style="display: flex; flex-direction: column; align-items: center; padding: 24px 16px 12px;">
                     @if (!string.IsNullOrEmpty(item.Foto))
                     {
-                        <img src="@item.Foto" alt="Foto"
-                             style="width: 90px; height: 90px; object-fit: cover; border-radius: 50%;
-                        border: 3px solid rgba(127,212,255,0.35);
-                        box-shadow: 0 0 20px rgba(127,212,255,0.15); margin-bottom: 12px;" />
+                        @if (item.Foto.EndsWith(".mp4") || item.Foto.EndsWith(".webm"))
+                        {
+                            <video autoplay loop muted playsinline
+                                   style="width: 130px; height: 130px; object-fit: cover; border-radius: 50%;
+                                border: 3px solid rgba(127,212,255,0.35);
+                                box-shadow: 0 0 20px rgba(127,212,255,0.15); margin-bottom: 12px;">
+                                <source src="@item.Foto" type="video/mp4" />
+                            </video>
+                        }
+                        else
+                        {
+                            <img src="@item.Foto" alt="Foto"
+                                 style="width: 130px; height: 130px; object-fit: cover; border-radius: 50%;
+                            border: 3px solid rgba(127,212,255,0.35);
+                            box-shadow: 0 0 20px rgba(127,212,255,0.15); margin-bottom: 12px;" />
+                        }
                     }
                     else
                     {
-                        <div style="width: 90px; height: 90px; border-radius: 50%;
+                        <div style="width: 130px; height: 130px; border-radius: 50%;
                             background: linear-gradient(135deg, #0a1628, #1a3a5c);
                             display: flex; align-items: center; justify-content: center;
                             font-size: 36px; margin-bottom: 12px; border: 3px solid rgba(127,212,255,0.2);">
@@ -40,7 +48,6 @@
                         @item.Especialidade
                     </span>
                 </div>
-
                 <div class="evento-card-body" style="padding-top: 0;">
                     <div class="evento-card-meta">
                         <span>🏢 @item.Empresa</span>
@@ -60,5 +67,4 @@
             </div>
         }
     </div>
-
 </div>

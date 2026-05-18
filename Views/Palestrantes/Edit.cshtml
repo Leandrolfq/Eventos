@@ -1,54 +1,70 @@
 ﻿@model Eventos.Models.Palestrante
-
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Palestrante";
 }
 
-<h1>Edit</h1>
+<div class="fade-in" style="padding: 30px 0;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="persona3-title">Editar Palestrante</h1>
+        <a asp-action="Index" class="btn btn-outline-secondary" style="border-color: rgba(127,212,255,0.3); color: #7fd4ff;">← Voltar</a>
+    </div>
 
-<h4>Palestrante</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+    <div style="background: rgba(10,22,40,0.85); border: 1px solid rgba(127,212,255,0.15);
+        border-radius: 16px; padding: 32px; max-width: 600px;">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="NomeCompleto" class="control-label"></label>
+            <input type="hidden" asp-for="Foto" />
+
+            <div class="form-group mb-4">
+                <label class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">Nome Completo</label>
                 <input asp-for="NomeCompleto" class="form-control" />
                 <span asp-validation-for="NomeCompleto" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Empresa" class="control-label"></label>
+
+            <div class="form-group mb-4">
+                <label class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">Empresa</label>
                 <input asp-for="Empresa" class="form-control" />
                 <span asp-validation-for="Empresa" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Especialidade" class="control-label"></label>
+
+            <div class="form-group mb-4">
+                <label class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">Especialidade</label>
                 <input asp-for="Especialidade" class="form-control" />
                 <span asp-validation-for="Especialidade" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="MiniBiografia" class="control-label"></label>
-                <input asp-for="MiniBiografia" class="form-control" />
+
+            <div class="form-group mb-4">
+                <label class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">Mini Biografia</label>
+                <textarea asp-for="MiniBiografia" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="MiniBiografia" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Foto" class="control-label"></label>
-                <input asp-for="Foto" class="form-control" />
-                <span asp-validation-for="Foto" class="text-danger"></span>
+
+            <div class="form-group mb-4">
+                <label class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">Foto</label>
+                @if (!string.IsNullOrEmpty(Model.Foto))
+                {
+                    <div style="margin-bottom: 10px;">
+                        <img src="@Model.Foto" style="width:80px; height:80px; border-radius:50%;
+                        border: 3px solid rgba(127,212,255,0.35);
+                        box-shadow: 0 0 20px rgba(127,212,255,0.15);" />
+                        <span style="color: #7fd4ff; font-size: 12px; margin-left: 10px;">Foto atual</span>
+                    </div>
+                }
+                <input type="file" name="FotoFile" accept="image/*,image/gif,video/mp4,video/*" class="form-control" />
+                <span style="color: rgba(127,212,255,0.5); font-size: 11px;">Deixe em branco para manter a foto atual</span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="persona3-btn">Salvar Alterações</button>
+                <a asp-action="Index" class="btn btn-outline-secondary" style="border-color: rgba(255,80,80,0.4); color: #ff6b6b;">Cancelar</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

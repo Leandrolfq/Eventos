@@ -79,42 +79,55 @@ namespace Eventos.Controllers
 		}
 
 		// POST: Palestrantes/Edit/5
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+		public async Task<IActionResult> Edit(int? id)
+		{
+			if (id == null) return NotFound();
+			var palestrante = await _context.Palestrante.FindAsync(id);
+			if (palestrante == null) return NotFound();
+			return View(palestrante);
+		}
+
+		// POST: Palestrantes/Edit/5
 		[HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,NomeCompleto,Empresa,Especialidade,MiniBiografia,Foto")] Palestrante palestrante)
-        {
-            if (id != palestrante.Id)
-            {
-                return NotFound();
-            }
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Edit(int id, [Bind("Id,NomeCompleto,Empresa,Especialidade,MiniBiografia,Foto")] Palestrante palestrante, IFormFile? FotoFile)
+		{
+			if (id != palestrante.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(palestrante);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PalestranteExists(palestrante.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(palestrante);
-        }
+			ModelState.Remove("Foto");
 
-        // GET: Palestrantes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+			if (ModelState.IsValid)
+			{
+				if (FotoFile != null && FotoFile.Length > 0)
+				{
+					var pasta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/palestrantes");
+					Directory.CreateDirectory(pasta);
+					var nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(FotoFile.FileName);
+					var caminho = Path.Combine(pasta, nomeArquivo);
+					using (var stream = new FileStream(caminho, FileMode.Create))
+					{
+						await FotoFile.CopyToAsync(stream);
+					}
+					palestrante.Foto = "/images/palestrantes/" + nomeArquivo;
+				}
+
+				try
+				{
+					_context.Update(palestrante);
+					await _context.SaveChangesAsync();
+				}
+				catch (DbUpdateConcurrencyException)
+				{
+					if (!PalestranteExists(palestrante.Id)) return NotFound();
+					else throw;
+				}
+				return RedirectToAction(nameof(Index));
+			}
+			return View(palestrante);
+		}
+		// GET: Palestrantes/Delete/5
+		public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
