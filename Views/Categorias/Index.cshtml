@@ -1,35 +1,40 @@
 ﻿@model IEnumerable<Eventos.Models.Categoria>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Categorias";
 }
 
-<h1>Index</h1>
+<div class="fade-in" style="padding: 30px 0;">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="persona3-title">Categorias</h1>
+        <a asp-action="Create" class="persona3-btn">+ Nova Categoria</a>
+    </div>
+
+    <div class="persona3-card">
+        <table class="table table-hover align-middle persona3-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th style="text-align: center;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="color: #7fd4ff; font-weight: 700;">
+                            @Html.DisplayFor(modelItem => item.Nome)
+                        </td>
+                        <td style="text-align: center;">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn-acao btn-editar">Editar</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn-acao btn-detalhes">Detalhes</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn-acao btn-excluir">Excluir</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>

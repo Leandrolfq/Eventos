@@ -43,33 +43,34 @@ namespace Eventos.Controllers
             return View(palestrante);
         }
 
-        // GET: Palestrantes/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+		// GET: Palestrantes/Create
+		
+		public IActionResult Create()
+		{
+			return View();
+		}
 
 		// POST: Palestrantes/Create
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,NomeCompleto,Empresa,Especialidade,MiniBiografia,Foto")] Palestrante palestrante, IFormFile fotoFile)
+		public async Task<IActionResult> Create([Bind("Id,NomeCompleto,Empresa,Especialidade,MiniBiografia")] Palestrante palestrante, IFormFile Foto)
 		{
-			if (fotoFile != null && fotoFile.Length > 0)
-			{
-				var nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(fotoFile.FileName);
-				var caminho = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", nomeArquivo);
-
-				using (var stream = new FileStream(caminho, FileMode.Create))
-				{
-					await fotoFile.CopyToAsync(stream);
-				}
-
-				palestrante.Foto = "/images/" + nomeArquivo;
-			}
-			ModelState.Remove("Foto");
+			ModelState.Remove("Foto"); // adiciona essa linha
 			if (ModelState.IsValid)
 			{
+				if (Foto != null && Foto.Length > 0)
+				{
+					var pasta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/palestrantes");
+					Directory.CreateDirectory(pasta);
+					var nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(Foto.FileName);
+					var caminho = Path.Combine(pasta, nomeArquivo);
+					using (var stream = new FileStream(caminho, FileMode.Create))
+					{
+						await Foto.CopyToAsync(stream);
+					}
+					palestrante.Foto = "/images/palestrantes/" + nomeArquivo;
+				}
+
 				_context.Add(palestrante);
 				await _context.SaveChangesAsync();
 				return RedirectToAction(nameof(Index));

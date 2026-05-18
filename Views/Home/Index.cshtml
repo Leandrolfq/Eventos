@@ -1,8 +1,24 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center fade-in py-5"
+     style="min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+
+    <h1 class="display-3 fw-bold mb-4">Palestras Feitas pra Você</h1>
+
+    <p class="lead mt-4" style="max-width: 800px; font-size: 1.3rem; line-height: 1.8;">
+        Participe das palestras disponíveis no momento
+        e escolha a que mais chamar sua atenção.
+    </p>
+
+    <p class="mt-3" style="max-width: 750px; font-size: 1.1rem; line-height: 1.8;">
+        Explore eventos exclusivos e faça sua inscrição.
+    </p>
+
+    <a asp-controller="Palestrantes"
+       asp-action="Index"
+       class="btn btn-primary btn-lg mt-4 px-5 py-3">
+        Ver Palestras
+    </a>
 </div>

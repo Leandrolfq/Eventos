@@ -14,7 +14,7 @@ namespace Eventos.Models
         public string Especialidade { get; set; }
         [Required]
         public string MiniBiografia { get; set; }
-        [Required]
+       
         public string Foto { get; set; }
     }
 }

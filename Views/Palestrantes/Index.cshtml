@@ -1,59 +1,64 @@
 ﻿@model IEnumerable<Eventos.Models.Palestrante>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Palestrantes";
 }
 
-<h1>Index</h1>
+<div class="fade-in" style="padding: 30px 0;">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.NomeCompleto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Empresa)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Especialidade)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MiniBiografia)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Foto)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NomeCompleto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Empresa)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Especialidade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MiniBiografia)
-            </td>
-            <td>
-               <img src="@item.Foto" alt="Foto" style="width: 80px; height: auto; border-radius: 50%;" />
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="persona3-title">Palestrantes</h1>
+        <a asp-action="Create" class="persona3-btn">+ Novo Palestrante</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+        @foreach (var item in Model)
+        {
+            <div class="evento-card">
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 24px 16px 12px;">
+                    @if (!string.IsNullOrEmpty(item.Foto))
+                    {
+                        <img src="@item.Foto" alt="Foto"
+                             style="width: 90px; height: 90px; object-fit: cover; border-radius: 50%;
+                        border: 3px solid rgba(127,212,255,0.35);
+                        box-shadow: 0 0 20px rgba(127,212,255,0.15); margin-bottom: 12px;" />
+                    }
+                    else
+                    {
+                        <div style="width: 90px; height: 90px; border-radius: 50%;
+                            background: linear-gradient(135deg, #0a1628, #1a3a5c);
+                            display: flex; align-items: center; justify-content: center;
+                            font-size: 36px; margin-bottom: 12px; border: 3px solid rgba(127,212,255,0.2);">
+                            👤
+                        </div>
+                    }
+                    <div class="evento-card-title" style="text-align: center;">@item.NomeCompleto</div>
+                    <span style="background: rgba(127,212,255,0.12); color: #7fd4ff;
+                        border: 1px solid rgba(127,212,255,0.25); border-radius: 20px;
+                        font-size: 11px; font-weight: 700; padding: 4px 12px;
+                        text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                        @item.Especialidade
+                    </span>
+                </div>
+
+                <div class="evento-card-body" style="padding-top: 0;">
+                    <div class="evento-card-meta">
+                        <span>🏢 @item.Empresa</span>
+                    </div>
+                    <div class="evento-card-desc">
+                        @{
+                            var bio = item.MiniBiografia ?? "";
+                            @(bio.Length > 80 ? bio.Substring(0, 80) + "..." : bio)
+                        }
+                    </div>
+                    <div class="evento-card-actions">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn-acao btn-editar">Editar</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn-acao btn-detalhes">Detalhes</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn-acao btn-excluir">Excluir</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
