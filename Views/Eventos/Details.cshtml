@@ -1,54 +1,88 @@
 ﻿@model Eventos.Models.Evento
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Evento";
 }
 
-<h1>Details</h1>
+<h1>@Model.Nome</h1>
+<hr />
 
-<div>
-    <h4>Evento</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descricao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descricao)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Data)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Data)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Horario)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Horario)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Local)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Local)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Banner)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Banner)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+@if (!string.IsNullOrEmpty(Model.Banner))
+{
+    <img src="@Model.Banner" alt="Banner" style="max-width: 100%; max-height: 350px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;" />
+}
+
+<dl class="row">
+    <dt class="col-sm-2">Descrição</dt>
+    <dd class="col-sm-10">@Model.Descricao</dd>
+
+    <dt class="col-sm-2">Data</dt>
+    <dd class="col-sm-10">@Model.Data.ToString("dd/MM/yyyy")</dd>
+
+    <dt class="col-sm-2">Horário</dt>
+    <dd class="col-sm-10">@Model.Horario</dd>
+
+    <dt class="col-sm-2">Local</dt>
+    <dd class="col-sm-10">@Model.Local</dd>
+
+    <dt class="col-sm-2">Categorias</dt>
+    <dd class="col-sm-10">
+        @if (Model.EventoCategorias != null && Model.EventoCategorias.Any())
+        {
+            @foreach (var ec in Model.EventoCategorias)
+            {
+                <span class="badge bg-secondary me-1">@ec.Categoria.Nome</span>
+            }
+        }
+        else
+        {
+            <span>Nenhuma categoria</span>
+        }
+    </dd>
+</dl>
+
+<h4 class="mt-4">Palestrantes</h4>
+<hr />
+
+@if (Model.EventoPalestrantes != null && Model.EventoPalestrantes.Any())
+{
+    <div class="row">
+        @foreach (var ep in Model.EventoPalestrantes)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(ep.Palestrante.Foto))
+                    {
+                        <img src="@ep.Palestrante.Foto" class="card-img-top"
+                             style="height: 180px; object-fit: cover;" alt="Foto" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a asp-controller="Palestrantes" asp-action="Details" asp-route-id="@ep.Palestrante.Id">
+                                @ep.Palestrante.NomeCompleto
+                            </a>
+                        </h5>
+                        <p class="card-text">
+                            <strong>Empresa:</strong> @ep.Palestrante.Empresa<br />
+                            <strong>Especialidade:</strong> @ep.Palestrante.Especialidade<br />
+                            @if (!string.IsNullOrEmpty(ep.Tema))
+                            {
+                                <strong>Tema:</strong> 
+                                @ep.Tema
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Nenhum palestrante cadastrado para este evento.</p>
+}
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
 </div>

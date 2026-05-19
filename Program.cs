@@ -4,25 +4,21 @@ using Eventos.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DbContext
 builder.Services.AddDbContext<EventosContext>(options =>
 	options.UseSqlServer(
 		builder.Configuration.GetConnectionString("EventosContext")
 		?? throw new InvalidOperationException("Connection string 'EventosContext' not found.")));
 
-// 🔐 IDENTITY (FALTAVA ISSO)
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
 	options.SignIn.RequireConfirmedAccount = false;
 })
 .AddEntityFrameworkStores<EventosContext>();
 
-// MVC
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Pipeline
 if (!app.Environment.IsDevelopment())
 {
 	app.UseExceptionHandler("/Home/Error");
@@ -31,15 +27,34 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
-// 🔐 FALTAVA ISSO TAMBÉM
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages(); // necessário para as páginas de login do Identity
+
+// Seed do usuário admin
+using (var scope = app.Services.CreateScope())
+{
+	var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+	string email = "admin@techconnect.com";
+	string senha = "Admin@1234";
+
+	if (await userManager.FindByEmailAsync(email) == null)
+	{
+		var admin = new IdentityUser
+		{
+			UserName = email,
+			Email = email,
+			EmailConfirmed = true
+		};
+		await userManager.CreateAsync(admin, senha);
+	}
+}
 
 app.Run();

@@ -7,6 +7,36 @@
         <h1 class="persona3-title">Eventos</h1>
         <a asp-action="Create" class="persona3-btn">+ Novo Evento</a>
     </div>
+
+    {{-- ADICIONA AQUI --}}
+    <form method="get" asp-action="Index" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="nome" value="@ViewBag.NomeBusca"
+                   class="form-control" placeholder="Nome do evento" />
+        </div>
+        <div class="col-md-3">
+            <select name="categoriaId" class="form-select">
+                <option value="">-- Todas as categorias --</option>
+                @foreach (var cat in (List<Eventos.Models.Categoria>)ViewBag.Categorias)
+                {
+                    <option value="@cat.Id" selected="@(ViewBag.CategoriaId == cat.Id)">@cat.Nome</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="palestranteId" class="form-select">
+                <option value="">-- Todos os palestrantes --</option>
+                @foreach (var pal in (List<Eventos.Models.Palestrante>)ViewBag.Palestrantes)
+                {
+                    <option value="@pal.Id" selected="@(ViewBag.PalestranteId == pal.Id)">@pal.NomeCompleto</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+    </form>
+
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
         @foreach (var item in Model)
         {
@@ -28,7 +58,6 @@
                         <span>🕖 @item.Horario</span>
                         <span>📍 @item.Local</span>
                     </div>
-
                     @if (item.EventoCategorias != null && item.EventoCategorias.Any())
                     {
                         <div style="margin: 8px 0; display: flex; flex-wrap: wrap; gap: 5px;">
@@ -40,7 +69,6 @@
                             }
                         </div>
                     }
-
                     <div class="evento-card-desc">
                         @{
                             var desc = item.Descricao ?? "";

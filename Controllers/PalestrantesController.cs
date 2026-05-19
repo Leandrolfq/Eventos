@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Eventos.Data;
 using Eventos.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Eventos.Controllers
 {
+	[Authorize]
     public class PalestrantesController : Controller
     {
         private readonly EventosContext _context;

@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Eventos.Data;
 using Eventos.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Eventos.Controllers
 {
+    [Authorize]
     public class EventosController : Controller
     {
         private readonly EventosContext _context;
@@ -19,34 +21,48 @@ namespace Eventos.Controllers
             _context = context;
         }
 
-        // GET: Eventos
-        public async Task<IActionResult> Index()
-        {
-			return View(await _context.Evento
-	            .Include(e => e.EventoCategorias)
-		        .ThenInclude(ec => ec.Categoria)
-	            .Include(e => e.EventoPalestrantes)
-		        .ThenInclude(ep => ep.Palestrante)
-	            .ToListAsync());
+		// GET: Eventos
+		public async Task<IActionResult> Index(string? nome, int? categoriaId, int? palestranteId)
+		{
+			var eventos = _context.Evento
+				.Include(e => e.EventoCategorias).ThenInclude(ec => ec.Categoria)
+				.Include(e => e.EventoPalestrantes).ThenInclude(ep => ep.Palestrante)
+				.AsQueryable();
+
+			if (!string.IsNullOrEmpty(nome))
+				eventos = eventos.Where(e => e.Nome.Contains(nome));
+
+			if (categoriaId.HasValue)
+				eventos = eventos.Where(e => e.EventoCategorias.Any(ec => ec.CategoriaId == categoriaId));
+
+			if (palestranteId.HasValue)
+				eventos = eventos.Where(e => e.EventoPalestrantes.Any(ep => ep.PalestranteId == palestranteId));
+
+			ViewBag.Categorias = await _context.Categoria.ToListAsync();
+			ViewBag.Palestrantes = await _context.Palestrante.ToListAsync();
+			ViewBag.NomeBusca = nome;
+			ViewBag.CategoriaId = categoriaId;
+			ViewBag.PalestranteId = palestranteId;
+
+			return View(await eventos.ToListAsync());
 		}
 
-        // GET: Eventos/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		// GET: Eventos/Details/5
+		public async Task<IActionResult> Details(int? id)
+		{
+			if (id == null)
+				return NotFound();
 
-            var evento = await _context.Evento
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (evento == null)
-            {
-                return NotFound();
-            }
+			var evento = await _context.Evento
+				.Include(e => e.EventoCategorias).ThenInclude(ec => ec.Categoria)
+				.Include(e => e.EventoPalestrantes).ThenInclude(ep => ep.Palestrante)
+				.FirstOrDefaultAsync(m => m.Id == id);
 
-            return View(evento);
-        }
+			if (evento == null)
+				return NotFound();
+
+			return View(evento);
+		}
 
 		public IActionResult Create()
 		{
