@@ -1,20 +1,31 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Eventos.Data;
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<EventosContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("EventosContext") ?? throw new InvalidOperationException("Connection string 'EventosContext' not found.")));
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
+
+// DbContext
+builder.Services.AddDbContext<EventosContext>(options =>
+	options.UseSqlServer(
+		builder.Configuration.GetConnectionString("EventosContext")
+		?? throw new InvalidOperationException("Connection string 'EventosContext' not found.")));
+
+// 🔐 IDENTITY (FALTAVA ISSO)
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
+	options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<EventosContext>();
+
+// MVC
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Pipeline
 if (!app.Environment.IsDevelopment())
 {
 	app.UseExceptionHandler("/Home/Error");
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
 }
 
@@ -23,6 +34,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// 🔐 FALTAVA ISSO TAMBÉM
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
