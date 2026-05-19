@@ -16,5 +16,7 @@ namespace Eventos.Models
         public string MiniBiografia { get; set; }
        
         public string Foto { get; set; }
-    }
+
+		
+	}
 }

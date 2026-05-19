@@ -11,7 +11,7 @@
         <a asp-action="Index" class="btn-acao btn-detalhes">← Voltar</a>
     </div>
 
-    <div class="persona3-card" style="max-width: 600px;">
+    <div class="persona3-card" style="max-width: 800px;">
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
@@ -23,20 +23,25 @@
 
             <div class="form-group mb-3">
                 <label asp-for="Descricao" class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;"></label>
-                <input asp-for="Descricao" class="form-control" />
+                <textarea asp-for="Descricao" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Descricao" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Data" class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;"></label>
-                <input asp-for="Data" class="form-control" />
-                <span asp-validation-for="Data" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Horario" class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;"></label>
-                <input asp-for="Horario" class="form-control" />
-                <span asp-validation-for="Horario" class="text-danger"></span>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="Data" class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;"></label>
+                        <input asp-for="Data" class="form-control" type="date" />
+                        <span asp-validation-for="Data" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="Horario" class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;"></label>
+                        <input asp-for="Horario" class="form-control" type="time" />
+                        <span asp-validation-for="Horario" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group mb-3">
@@ -49,6 +54,68 @@
                 <label class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">Banner</label>
                 <input type="file" name="bannerFile" class="form-control" accept="image/*" />
             </div>
+
+            <hr style="border-color: #7fd4ff; opacity: 0.3; margin: 30px 0;">
+
+            <!-- CATEGORIAS -->
+            <div class="form-group mb-4">
+                <label class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">Categorias</label>
+                <div class="row">
+                    @if (ViewBag.Categorias != null)
+                    {
+                        @foreach (var categoria in ViewBag.Categorias as List<Eventos.Models.Categoria>)
+                        {
+                            <div class="col-md-6 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="CategoriasIds" value="@categoria.Id" id="cat@(categoria.Id)" style="border-color: #7fd4ff;">
+                                    <label class="form-check-label" for="cat@(categoria.Id)" style="color: #e0e0e0;">
+                                        @categoria.Nome
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p style="color: #888;">Nenhuma categoria cadastrada. <a asp-controller="Categorias" asp-action="Create" style="color: #7fd4ff;">Criar categoria</a></p>
+                    }
+                </div>
+            </div>
+
+            <hr style="border-color: #7fd4ff; opacity: 0.3; margin: 30px 0;">
+
+            <!-- PALESTRANTES -->
+            <div class="form-group mb-4">
+                <label class="control-label" style="color: #7fd4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">Palestrantes</label>
+                <small style="color: #888; display: block; margin-bottom: 10px;">Marque os palestrantes e informe o tema de cada um</small>
+
+                @if (ViewBag.Palestrantes != null)
+                {
+                    var palestrantes = ViewBag.Palestrantes as List<Eventos.Models.Palestrante>;
+                    for (int i = 0; i < palestrantes.Count; i++)
+                    {
+                        var palestrante = palestrantes[i];
+                        <div class="mb-3 p-3" style="background: rgba(127, 212, 255, 0.05); border-left: 3px solid #7fd4ff; border-radius: 4px;">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input palestrante-checkbox" type="checkbox" name="PalestrantesIds" value="@palestrante.Id" id="pal@(palestrante.Id)" data-index="@i" style="border-color: #7fd4ff;">
+                                <label class="form-check-label" for="pal@(palestrante.Id)" style="color: #e0e0e0; font-weight: 600;">
+                                    @palestrante.NomeCompleto
+                                </label>
+                            </div>
+                            <small style="color: #888; margin-left: 25px; display: block; margin-bottom: 8px;">
+                                @palestrante.Empresa - @palestrante.Especialidade
+                            </small>
+                            <input type="text" name="Temas" class="form-control tema-input" placeholder="Tema da palestra..." id="tema@(i)" disabled style="margin-left: 25px; max-width: 500px;" />
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p style="color: #888;">Nenhum palestrante cadastrado. <a asp-controller="Palestrantes" asp-action="Create" style="color: #7fd4ff;">Criar palestrante</a></p>
+                }
+            </div>
+
+            <hr style="border-color: #7fd4ff; opacity: 0.3; margin: 30px 0;">
 
             <div class="d-flex gap-3">
                 <input type="submit" value="Criar Evento" class="persona3-btn" style="cursor: pointer;" />
@@ -63,4 +130,17 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        document.querySelectorAll('.palestrante-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const index = this.getAttribute('data-index');
+                const temaInput = document.getElementById('tema' + index);
+                temaInput.disabled = !this.checked;
+                if (!this.checked) {
+                    temaInput.value = '';
+                }
+            });
+        });
+    </script>
 }

@@ -22,8 +22,13 @@ namespace Eventos.Controllers
         // GET: Eventos
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Evento.ToListAsync());
-        }
+			return View(await _context.Evento
+	            .Include(e => e.EventoCategorias)
+		        .ThenInclude(ec => ec.Categoria)
+	            .Include(e => e.EventoPalestrantes)
+		        .ThenInclude(ep => ep.Palestrante)
+	            .ToListAsync());
+		}
 
         // GET: Eventos/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -45,30 +50,56 @@ namespace Eventos.Controllers
 
 		public IActionResult Create()
 		{
+			ViewBag.Categorias = _context.Categoria.ToList();
+			ViewBag.Palestrantes = _context.Palestrante.ToList();
 			return View();
 		}
 
 		// POST: Eventos/Create
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,Nome,Descricao,Data,Horario,Local,Banner")] Evento evento, IFormFile bannerFile)
+		public async Task<IActionResult> Create([Bind("Id,Nome,Descricao,Data,Horario,Local,Banner")] Evento evento,
+	IFormFile bannerFile,
+	int[] categoriasIds,      // IDs das categorias selecionadas
+	int[] palestrantesIds)    // IDs dos palestrantes selecionados
 		{
 			if (bannerFile != null && bannerFile.Length > 0)
 			{
 				var nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(bannerFile.FileName);
 				var caminho = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", nomeArquivo);
-
 				using (var stream = new FileStream(caminho, FileMode.Create))
 				{
 					await bannerFile.CopyToAsync(stream);
 				}
-
 				evento.Banner = "/images/" + nomeArquivo;
 			}
+
 			ModelState.Remove("Banner");
 			if (ModelState.IsValid)
 			{
 				_context.Add(evento);
+				await _context.SaveChangesAsync();
+
+				// Salva as categorias selecionadas
+				foreach (var categoriaId in categoriasIds)
+				{
+					_context.EventoCategorias.Add(new EventoCategoria
+					{
+						EventoId = evento.Id,
+						CategoriaId = categoriaId
+					});
+				}
+
+				// Salva os palestrantes selecionados
+				foreach (var palestranteId in palestrantesIds)
+				{
+					_context.EventoPalestrantes.Add(new EventoPalestrante
+					{
+						EventoId = evento.Id,
+						PalestranteId = palestranteId
+					});
+				}
+
 				await _context.SaveChangesAsync();
 				return RedirectToAction(nameof(Index));
 			}

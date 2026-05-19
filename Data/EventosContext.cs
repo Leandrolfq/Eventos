@@ -18,5 +18,18 @@ namespace Eventos.Data
         public DbSet<Eventos.Models.Contato> Contato { get; set; } = default!;
         public DbSet<Eventos.Models.Evento> Evento { get; set; } = default!;
         public DbSet<Eventos.Models.Palestrante> Palestrante { get; set; } = default!;
-    }
+        public DbSet<Eventos.Models.EventoPalestrante> EventoPalestrantes { get; set; } = default!;
+		public DbSet<Eventos.Models.EventoCategoria> EventoCategorias { get; set; } = default!;
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<EventoPalestrante>()
+				.HasKey(ep => new { ep.EventoId, ep.PalestranteId });
+
+			modelBuilder.Entity<EventoCategoria>()
+				.HasKey(ec => new { ec.EventoId, ec.CategoriaId });
+		}
+	}
+
 }
+

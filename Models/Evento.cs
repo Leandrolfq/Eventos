@@ -17,6 +17,8 @@ namespace Eventos.Models
         public string Local { get; set; }
         [Required]
         public string Banner { get; set; }
+		public ICollection<EventoPalestrante> EventoPalestrantes { get; set; } = new List<EventoPalestrante>();
+		public ICollection<EventoCategoria> EventoCategorias { get; set; } = new List<EventoCategoria>();
 
-    }
+	}
 }

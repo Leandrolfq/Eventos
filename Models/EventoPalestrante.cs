@@ -6,6 +6,8 @@ namespace Eventos.Models
         public Evento? Evento { get; set; }
         public int PalestranteId { get; set; }
         public Palestrante? Palestrante { get; set; }
-        public string Tema { get; set; }
+        public string? Tema { get; set; }
+
+        
     }
 }

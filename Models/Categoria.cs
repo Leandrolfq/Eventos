@@ -7,5 +7,7 @@ namespace Eventos.Models
         public int Id { get; set; }
         [Required]
         public string Nome { get; set; }
-    }
+
+		
+	}
 }
