@@ -1,26 +1,335 @@
-﻿@{
-    ViewData["Title"] = "Home";
+﻿
+@{
+    ViewData["Title"] = "Evento LPQJ";
 }
 
-<div class="text-center fade-in py-5"
-     style="min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+<style>
+    /* =========================
+           ANIMAÇÕES
+        ========================= */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
 
-    <h1 class="display-3 fw-bold mb-4">Palestras Feitas pra Você</h1>
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-    <p class="lead mt-4" style="max-width: 800px; font-size: 1.3rem; line-height: 1.8;">
-        Participe das palestras disponíveis no momento
-        e escolha a que mais chamar sua atenção.
-    </p>
+    @@keyframes shine {
+        0% {
+            background-position: 0% center;
+        }
 
-    <p class="mt-3" style="max-width: 750px; font-size: 1.1rem; line-height: 1.8;">
-        Explore eventos exclusivos e faça sua inscrição.
-    </p>
+        100% {
+            background-position: 200% center;
+        }
+    }
 
-    <a asp-controller="Palestrantes"
-       asp-action="Index"
-       class="btn btn-primary btn-lg mt-4 px-5 py-3">
-        Ver Palestras
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
 
-        <a> Qualquer duvida que tiver pode entrar contato com a nossa pagina de Suporte  </a>
-    </a>
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    /* =========================
+           PÁGINA HOME
+        ========================= */
+    .home-page {
+        min-height: 90vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 40px 20px;
+        animation: fadeInUp 1.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        /* Efeito de brilho no fundo */
+        .home-page::before {
+            content: "";
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(127, 212, 255, 0.15), transparent 70%);
+            top: 10%;
+            left: 5%;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .home-page::after {
+            content: "";
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(60, 174, 255, 0.12), transparent 70%);
+            bottom: 5%;
+            right: 10%;
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+    /* =========================
+           CARD PRINCIPAL
+        ========================= */
+    .home-card {
+        position: relative;
+        z-index: 1;
+        max-width: 1000px;
+        width: 100%;
+        padding: 70px 60px;
+        border-radius: 30px;
+        background: rgba(8, 20, 45, 0.88);
+        border: 1px solid rgba(127, 212, 255, 0.20);
+        box-shadow: 0 0 30px rgba(127, 212, 255, 0.08), 0 20px 60px rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(12px);
+    }
+
+    /* =========================
+           LOGO/ÍCONE
+        ========================= */
+    .home-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        animation: float 4s ease-in-out infinite;
+    }
+
+    /* =========================
+           TÍTULO PRINCIPAL
+        ========================= */
+    .home-title {
+        font-size: 4rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        margin-bottom: 25px;
+        background: linear-gradient(90deg, #7fd4ff, #ffffff, #7fd4ff);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 4s linear infinite;
+        text-shadow: 0 0 25px rgba(127, 212, 255, 0.2);
+    }
+
+    /* =========================
+           NOME DO EVENTO
+        ========================= */
+    .event-name {
+        display: inline-block;
+        margin-bottom: 30px;
+        padding: 10px 25px;
+        border-radius: 999px;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #7fd4ff;
+        background: rgba(127, 212, 255, 0.12);
+        border: 1px solid rgba(127, 212, 255, 0.25);
+        box-shadow: 0 0 20px rgba(127, 212, 255, 0.08);
+    }
+
+    /* =========================
+           TEXTO
+        ========================= */
+    .home-text {
+        color: #e8f8ff;
+        font-size: 1.3rem;
+        line-height: 1.9;
+        max-width: 780px;
+        margin: 0 auto 15px auto;
+    }
+
+    .home-subtext {
+        color: #cfefff;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        max-width: 720px;
+        margin: 0 auto 40px auto;
+    }
+
+    /* =========================
+           BOTÕES
+        ========================= */
+    .home-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+
+    .home-btn {
+        display: inline-block;
+        padding: 16px 40px;
+        border-radius: 14px;
+        background: linear-gradient(90deg, #3caeff, #7fd4ff);
+        color: #001426 !important;
+        font-size: 1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-decoration: none;
+        border: none;
+        box-shadow: 0 0 25px rgba(127, 212, 255, 0.18);
+        transition: all 0.3s ease;
+    }
+
+        .home-btn:hover {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 0 35px rgba(127, 212, 255, 0.35);
+            color: #001426 !important;
+        }
+
+    .home-btn-secondary {
+        background: transparent;
+        color: #7fd4ff !important;
+        border: 2px solid #7fd4ff;
+        box-shadow: none;
+    }
+
+        .home-btn-secondary:hover {
+            background: rgba(127, 212, 255, 0.10);
+            color: #ffffff !important;
+            box-shadow: 0 0 25px rgba(127, 212, 255, 0.20);
+        }
+
+    /* =========================
+           ESTATÍSTICAS
+        ========================= */
+    .home-stats {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        margin-top: 50px;
+    }
+
+    .stat-card {
+        min-width: 160px;
+        padding: 20px 25px;
+        border-radius: 18px;
+        background: rgba(127, 212, 255, 0.06);
+        border: 1px solid rgba(127, 212, 255, 0.12);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #7fd4ff;
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #cfefff;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* =========================
+           RESPONSIVO
+        ========================= */
+    @@media (max-width: 768px) {
+        .home-card {
+            padding: 50px 30px;
+        }
+
+        .home-title {
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+        }
+
+        .home-text {
+            font-size: 1.1rem;
+        }
+
+        .home-subtext {
+            font-size: 1rem;
+        }
+
+        .home-buttons {
+            flex-direction: column;
+        }
+
+        .home-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="home-page">
+    <div class="home-card">
+
+        <!-- Ícone -->
+        <div class="home-icon">😎</div>
+
+        <!-- Título -->
+        <h1 class="home-title">Palestras Feitas pra Você</h1>
+
+        <!-- Nome do Evento -->
+        <div class="event-name">
+            Evento LPQJ
+        </div>
+
+        <!-- Texto principal -->
+        <p class="home-text">
+            Participe das palestras disponíveis no momento e escolha aquela
+            que mais chamar sua atenção.
+        </p>
+
+        <!-- Texto secundário -->
+        <p class="home-subtext">
+            Explore eventos exclusivos, conheça palestrantes renomados
+            e faça sua inscrição em poucos cliques.
+        </p>
+
+        <!-- Botões -->
+        <div class="home-buttons">
+            <a asp-controller="Palestrantes"
+               asp-action="Index"
+               class="home-btn">
+                Ver Palestrantes
+            </a>
+
+            <a asp-controller="Eventos"
+               asp-action="Index"
+               class="home-btn home-btn-secondary">
+                Ver Eventos
+            </a>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="home-stats">
+            <div class="stat-card">
+                <span class="stat-number">10+</span>
+                <span class="stat-label">Palestras</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number">20+</span>
+                <span class="stat-label">Palestrantes</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">Gratuito</span>
+            </div>
+        </div>
+
+    </div>
 </div>
+
+
