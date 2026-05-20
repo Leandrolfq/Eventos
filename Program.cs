@@ -13,6 +13,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
 	options.SignIn.RequireConfirmedAccount = false;
 })
+.AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<EventosContext>();
 
 builder.Services.AddControllersWithViews();
@@ -41,9 +42,16 @@ app.MapRazorPages(); // necessário para as páginas de login do Identity
 using (var scope = app.Services.CreateScope())
 {
 	var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+	var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+	// Cria a role Admin se não existir
+	if (!await roleManager.RoleExistsAsync("Admin"))
+	{
+		await roleManager.CreateAsync(new IdentityRole("Admin"));
+	}
 
 	string email = "admin@techconnect.com";
-	string senha = "Admin@1234";
+	string senha = "Admin123@";
 
 	if (await userManager.FindByEmailAsync(email) == null)
 	{
@@ -55,6 +63,12 @@ using (var scope = app.Services.CreateScope())
 		};
 		await userManager.CreateAsync(admin, senha);
 	}
-}
 
+	// Atribui a role Admin ao usuário
+	var adminUser = await userManager.FindByEmailAsync(email);
+	if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+	{
+		await userManager.AddToRoleAsync(adminUser, "Admin");
+	}
+}
 app.Run();

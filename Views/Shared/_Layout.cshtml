@@ -19,9 +19,8 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link nav-menu-btn" asp-area="" asp-controller="Categorias" asp-action="Index">Categorias</a>
-                        </li>
+
+                        @* Links visíveis para todos *@
                         <li class="nav-item">
                             <a class="nav-link nav-menu-btn" asp-area="" asp-controller="Eventos" asp-action="Index">Eventos</a>
                         </li>
@@ -29,20 +28,39 @@
                             <a class="nav-link nav-menu-btn" asp-area="" asp-controller="Palestrantes" asp-action="Index">Palestrantes</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link nav-menu-btn" asp-area="" asp-controller="Contatos" asp-action="Index">Contatos</a>
+                            <a class="nav-link nav-menu-btn" asp-area="" asp-controller="Contatos" asp-action="Create">Contato</a>
                         </li>
-                        <li class="nav-item">
-                            @if (User.Identity != null && User.Identity.IsAuthenticated)
-                            {
+
+                        @* Links visíveis apenas para Admin *@
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link nav-menu-btn" asp-area="" asp-controller="Categorias" asp-action="Index">Categorias</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-menu-btn" asp-area="" asp-controller="Contatos" asp-action="Index">Gerenciar Contatos</a>
+                            </li>
+                        }
+
+                        @* Login/Logout *@
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
                                 <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
-                                    <button type="submit" class="nav-link btn btn-link">Sair</button>
+                                    <button type="submit" class="nav-link btn btn-link">Sair (@User.Identity.Name)</button>
                                 </form>
-                            }
-                            else
-                            {
-                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Admin</a>
-                            }
-                        </li>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Entrar</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Registrar</a>
+                            </li>
+                        }
+
                     </ul>
                 </div>
             </div>
@@ -53,7 +71,6 @@
             @RenderBody()
         </main>
     </div>
-
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2026 - Eventos - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
