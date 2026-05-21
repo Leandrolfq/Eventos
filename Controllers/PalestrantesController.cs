@@ -29,13 +29,17 @@ namespace Eventos.Controllers
 
 		// GET: Palestrantes/Details/5 - público para todos
 		[AllowAnonymous]
+		
 		public async Task<IActionResult> Details(int? id)
 		{
 			if (id == null)
 				return NotFound();
 
 			var palestrante = await _context.Palestrante
+				.Include(p => p.EventoPalestrantes)
+					.ThenInclude(ep => ep.Evento)
 				.FirstOrDefaultAsync(m => m.Id == id);
+
 			if (palestrante == null)
 				return NotFound();
 

@@ -1,48 +1,81 @@
 ﻿@model Eventos.Models.Palestrante
-
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Palestrante";
 }
 
-<h1>Details</h1>
+<div class="fade-in" style="padding: 30px 0;">
+    <div class="evento-card" style="max-width: 800px; margin: 0 auto;">
+        <div style="display: flex; flex-direction: column; align-items: center; padding: 40px 30px 20px;">
+            @if (!string.IsNullOrEmpty(Model.Foto))
+            {
+                <img src="@Model.Foto" alt="Foto"
+                     style="width: 160px; height: 160px; object-fit: cover; border-radius: 50%;
+                border: 3px solid rgba(127,212,255,0.35);
+                box-shadow: 0 0 25px rgba(127,212,255,0.2); margin-bottom: 16px;" />
+            }
+            else
+            {
+                <div style="width: 160px; height: 160px; border-radius: 50%;
+                    background: linear-gradient(135deg, #0a1628, #1a3a5c);
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 48px; margin-bottom: 16px;">
+                    👤
+                </div>
+            }
+            <h2 style="color: #7fd4ff; margin-bottom: 6px;">@Model.NomeCompleto</h2>
+            <span style="background: rgba(127,212,255,0.12); color: #7fd4ff;
+                border: 1px solid rgba(127,212,255,0.25); border-radius: 20px;
+                font-size: 12px; font-weight: 700; padding: 4px 14px;
+                text-transform: uppercase; letter-spacing: 0.5px;">
+                @Model.Especialidade
+            </span>
+        </div>
 
-<div>
-    <h4>Palestrante</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NomeCompleto)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NomeCompleto)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Empresa)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Empresa)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Especialidade)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Especialidade)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MiniBiografia)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MiniBiografia)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Foto)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Foto)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+        <div class="evento-card-body">
+            <div class="evento-card-meta" style="flex-direction: column; gap: 6px; align-items: flex-start;">
+                <span>🏢 <strong>Empresa:</strong> @Model.Empresa</span>
+                @if (!string.IsNullOrEmpty(Model.Cargo))
+                {
+                    <span>💼 <strong>Cargo:</strong> @Model.Cargo</span>
+                }
+            </div>
+
+            <div style="margin: 16px 0; color: #e8f8ff; line-height: 1.7;">
+                <strong style="color: #7fd4ff;">Biografia</strong><br />
+                @Model.MiniBiografia
+            </div>
+
+            @if (Model.EventoPalestrantes != null && Model.EventoPalestrantes.Any())
+            {
+                <hr style="border-color: rgba(127,212,255,0.15);" />
+                <h5 style="color: #7fd4ff; margin-bottom: 14px;">Eventos participados</h5>
+                @foreach (var ep in Model.EventoPalestrantes)
+                {
+                    <div style="background: rgba(127,212,255,0.06); border: 1px solid rgba(127,212,255,0.12);
+                        border-radius: 12px; padding: 12px 16px; margin-bottom: 10px;">
+                        <a asp-controller="Eventos" asp-action="Details" asp-route-id="@ep.Evento.Id"
+                           style="color: #7fd4ff; font-weight: 700; text-decoration: none;">
+                            @ep.Evento.Nome
+                        </a>
+                        <div style="color: #cfefff; font-size: 13px; margin-top: 4px;">
+                            📅 @ep.Evento.Data.ToString("dd/MM/yyyy")
+                            @if (!string.IsNullOrEmpty(ep.Tema))
+                            {
+                            <br />
+                                <span>🎤<em>@ep.Tema</em></span>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+
+            <div class="evento-card-actions" style="margin-top: 20px;">
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-acao btn-editar">Editar</a>
+                }
+                <a asp-action="Index" class="btn-acao btn-detalhes">Voltar</a>
+            </div>
+        </div>
+    </div>
 </div>

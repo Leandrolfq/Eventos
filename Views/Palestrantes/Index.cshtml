@@ -5,8 +5,30 @@
 <div class="fade-in" style="padding: 30px 0;">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="persona3-title">Palestrantes</h1>
-        <a asp-action="Create" class="persona3-btn">+ Novo Palestrante</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="persona3-btn">+ Novo Palestrante</a>
+        }
     </div>
+
+    <form method="get" asp-action="Index" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="nome" value="@ViewBag.NomeBusca"
+                   class="form-control" placeholder="Nome do palestrante" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="empresa" value="@ViewBag.EmpresaBusca"
+                   class="form-control" placeholder="Empresa" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="especialidade" value="@ViewBag.EspecialidadeBusca"
+                   class="form-control" placeholder="Especialidade" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+    </form>
+
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
         @foreach (var item in Model)
         {
@@ -14,22 +36,10 @@
                 <div style="display: flex; flex-direction: column; align-items: center; padding: 24px 16px 12px;">
                     @if (!string.IsNullOrEmpty(item.Foto))
                     {
-                        @if (item.Foto.EndsWith(".mp4") || item.Foto.EndsWith(".webm"))
-                        {
-                            <video autoplay loop muted playsinline
-                                   style="width: 130px; height: 130px; object-fit: cover; border-radius: 50%;
-                                border: 3px solid rgba(127,212,255,0.35);
-                                box-shadow: 0 0 20px rgba(127,212,255,0.15); margin-bottom: 12px;">
-                                <source src="@item.Foto" type="video/mp4" />
-                            </video>
-                        }
-                        else
-                        {
-                            <img src="@item.Foto" alt="Foto"
-                                 style="width: 130px; height: 130px; object-fit: cover; border-radius: 50%;
-                            border: 3px solid rgba(127,212,255,0.35);
-                            box-shadow: 0 0 20px rgba(127,212,255,0.15); margin-bottom: 12px;" />
-                        }
+                        <img src="@item.Foto" alt="Foto"
+                             style="width: 130px; height: 130px; object-fit: cover; border-radius: 50%;
+                        border: 3px solid rgba(127,212,255,0.35);
+                        box-shadow: 0 0 20px rgba(127,212,255,0.15); margin-bottom: 12px;" />
                     }
                     else
                     {
@@ -59,9 +69,15 @@
                         }
                     </div>
                     <div class="evento-card-actions">
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn-acao btn-editar">Editar</a>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn-acao btn-editar">Editar</a>
+                        }
                         <a asp-action="Details" asp-route-id="@item.Id" class="btn-acao btn-detalhes">Detalhes</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn-acao btn-excluir">Excluir</a>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn-acao btn-excluir">Excluir</a>
+                        }
                     </div>
                 </div>
             </div>
