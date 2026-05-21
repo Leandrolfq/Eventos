@@ -11,17 +11,17 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Eventos.Controllers
 {
-    [Authorize]
-    public class EventosController : Controller
-    {
-        private readonly EventosContext _context;
+	public class EventosController : Controller
+	{
+		private readonly EventosContext _context;
 
-        public EventosController(EventosContext context)
-        {
-            _context = context;
-        }
+		public EventosController(EventosContext context)
+		{
+			_context = context;
+		}
 
-		// GET: Eventos
+		// GET: Eventos - público para todos
+		[AllowAnonymous]
 		public async Task<IActionResult> Index(string? nome, int? categoriaId, int? palestranteId)
 		{
 			var eventos = _context.Evento
@@ -47,7 +47,8 @@ namespace Eventos.Controllers
 			return View(await eventos.ToListAsync());
 		}
 
-		// GET: Eventos/Details/5
+		// GET: Eventos/Details/5 - público para todos
+		[AllowAnonymous]
 		public async Task<IActionResult> Details(int? id)
 		{
 			if (id == null)
@@ -64,6 +65,8 @@ namespace Eventos.Controllers
 			return View(evento);
 		}
 
+		// GET: Eventos/Create
+		[Authorize(Roles = "Admin")]
 		public IActionResult Create()
 		{
 			ViewBag.Categorias = _context.Categoria.ToList();
@@ -74,10 +77,11 @@ namespace Eventos.Controllers
 		// POST: Eventos/Create
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Create([Bind("Id,Nome,Descricao,Data,Horario,Local,Banner")] Evento evento,
-	IFormFile bannerFile,
-	int[] categoriasIds,      // IDs das categorias selecionadas
-	int[] palestrantesIds)    // IDs dos palestrantes selecionados
+			IFormFile bannerFile,
+			int[] categoriasIds,
+			int[] palestrantesIds)
 		{
 			if (bannerFile != null && bannerFile.Length > 0)
 			{
@@ -96,7 +100,6 @@ namespace Eventos.Controllers
 				_context.Add(evento);
 				await _context.SaveChangesAsync();
 
-				// Salva as categorias selecionadas
 				foreach (var categoriaId in categoriasIds)
 				{
 					_context.EventoCategorias.Add(new EventoCategoria
@@ -106,7 +109,6 @@ namespace Eventos.Controllers
 					});
 				}
 
-				// Salva os palestrantes selecionados
 				foreach (var palestranteId in palestrantesIds)
 				{
 					_context.EventoPalestrantes.Add(new EventoPalestrante
@@ -121,93 +123,81 @@ namespace Eventos.Controllers
 			}
 			return View(evento);
 		}
+
 		// GET: Eventos/Edit/5
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		{
+			if (id == null)
+				return NotFound();
 
-            var evento = await _context.Evento.FindAsync(id);
-            if (evento == null)
-            {
-                return NotFound();
-            }
-            return View(evento);
-        }
+			var evento = await _context.Evento.FindAsync(id);
+			if (evento == null)
+				return NotFound();
 
-        // POST: Eventos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Descricao,Data,Horario,Local,Banner")] Evento evento)
-        {
-            if (id != evento.Id)
-            {
-                return NotFound();
-            }
+			return View(evento);
+		}
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(evento);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EventoExists(evento.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(evento);
-        }
+		// POST: Eventos/Edit/5
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Descricao,Data,Horario,Local,Banner")] Evento evento)
+		{
+			if (id != evento.Id)
+				return NotFound();
 
-        // GET: Eventos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					_context.Update(evento);
+					await _context.SaveChangesAsync();
+				}
+				catch (DbUpdateConcurrencyException)
+				{
+					if (!EventoExists(evento.Id))
+						return NotFound();
+					else
+						throw;
+				}
+				return RedirectToAction(nameof(Index));
+			}
+			return View(evento);
+		}
 
-            var evento = await _context.Evento
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (evento == null)
-            {
-                return NotFound();
-            }
+		// GET: Eventos/Delete/5
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Delete(int? id)
+		{
+			if (id == null)
+				return NotFound();
 
-            return View(evento);
-        }
+			var evento = await _context.Evento
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if (evento == null)
+				return NotFound();
 
-        // POST: Eventos/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var evento = await _context.Evento.FindAsync(id);
-            if (evento != null)
-            {
-                _context.Evento.Remove(evento);
-            }
+			return View(evento);
+		}
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+		// POST: Eventos/Delete/5
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> DeleteConfirmed(int id)
+		{
+			var evento = await _context.Evento.FindAsync(id);
+			if (evento != null)
+				_context.Evento.Remove(evento);
 
-        private bool EventoExists(int id)
-        {
-            return _context.Evento.Any(e => e.Id == id);
-        }
-    }
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
+		}
+
+		private bool EventoExists(int id)
+		{
+			return _context.Evento.Any(e => e.Id == id);
+		}
+	}
 }

@@ -11,42 +11,39 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Eventos.Controllers
 {
-	[Authorize]
-    public class PalestrantesController : Controller
-    {
-        private readonly EventosContext _context;
+	public class PalestrantesController : Controller
+	{
+		private readonly EventosContext _context;
 
-        public PalestrantesController(EventosContext context)
-        {
-            _context = context;
-        }
+		public PalestrantesController(EventosContext context)
+		{
+			_context = context;
+		}
 
-        // GET: Palestrantes
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Palestrante.ToListAsync());
-        }
+		// GET: Palestrantes - público para todos
+		[AllowAnonymous]
+		public async Task<IActionResult> Index()
+		{
+			return View(await _context.Palestrante.ToListAsync());
+		}
 
-        // GET: Palestrantes/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		// GET: Palestrantes/Details/5 - público para todos
+		[AllowAnonymous]
+		public async Task<IActionResult> Details(int? id)
+		{
+			if (id == null)
+				return NotFound();
 
-            var palestrante = await _context.Palestrante
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (palestrante == null)
-            {
-                return NotFound();
-            }
+			var palestrante = await _context.Palestrante
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if (palestrante == null)
+				return NotFound();
 
-            return View(palestrante);
-        }
+			return View(palestrante);
+		}
 
 		// GET: Palestrantes/Create
-		
+		[Authorize(Roles = "Admin")]
 		public IActionResult Create()
 		{
 			return View();
@@ -55,9 +52,10 @@ namespace Eventos.Controllers
 		// POST: Palestrantes/Create
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Create([Bind("Id,NomeCompleto,Empresa,Especialidade,MiniBiografia")] Palestrante palestrante, IFormFile Foto)
 		{
-			ModelState.Remove("Foto"); // adiciona essa linha
+			ModelState.Remove("Foto");
 			if (ModelState.IsValid)
 			{
 				if (Foto != null && Foto.Length > 0)
@@ -80,8 +78,8 @@ namespace Eventos.Controllers
 			return View(palestrante);
 		}
 
-		// POST: Palestrantes/Edit/5
-
+		// GET: Palestrantes/Edit/5
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Edit(int? id)
 		{
 			if (id == null) return NotFound();
@@ -93,6 +91,7 @@ namespace Eventos.Controllers
 		// POST: Palestrantes/Edit/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Edit(int id, [Bind("Id,NomeCompleto,Empresa,Especialidade,MiniBiografia,Foto")] Palestrante palestrante, IFormFile? FotoFile)
 		{
 			if (id != palestrante.Id) return NotFound();
@@ -128,42 +127,39 @@ namespace Eventos.Controllers
 			}
 			return View(palestrante);
 		}
+
 		// GET: Palestrantes/Delete/5
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		{
+			if (id == null)
+				return NotFound();
 
-            var palestrante = await _context.Palestrante
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (palestrante == null)
-            {
-                return NotFound();
-            }
+			var palestrante = await _context.Palestrante
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if (palestrante == null)
+				return NotFound();
 
-            return View(palestrante);
-        }
+			return View(palestrante);
+		}
 
-        // POST: Palestrantes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var palestrante = await _context.Palestrante.FindAsync(id);
-            if (palestrante != null)
-            {
-                _context.Palestrante.Remove(palestrante);
-            }
+		// POST: Palestrantes/Delete/5
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> DeleteConfirmed(int id)
+		{
+			var palestrante = await _context.Palestrante.FindAsync(id);
+			if (palestrante != null)
+				_context.Palestrante.Remove(palestrante);
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
+		}
 
-        private bool PalestranteExists(int id)
-        {
-            return _context.Palestrante.Any(e => e.Id == id);
-        }
-    }
+		private bool PalestranteExists(int id)
+		{
+			return _context.Palestrante.Any(e => e.Id == id);
+		}
+	}
 }
