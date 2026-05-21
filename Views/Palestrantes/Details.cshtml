@@ -8,27 +8,23 @@
         <div style="display: flex; flex-direction: column; align-items: center; padding: 40px 30px 20px;">
             @if (!string.IsNullOrEmpty(Model.Foto))
             {
-                <img src="@Model.Foto" alt="Foto"
-                     style="width: 160px; height: 160px; object-fit: cover; border-radius: 50%;
-                border: 3px solid rgba(127,212,255,0.35);
-                box-shadow: 0 0 25px rgba(127,212,255,0.2); margin-bottom: 16px;" />
+                @if (Model.Foto.EndsWith(".mp4") || Model.Foto.EndsWith(".webm"))
+                {
+                    <video autoplay loop muted playsinline
+                           style="width: 160px; height: 160px; object-fit: cover; border-radius: 50%;
+                        border: 3px solid rgba(127,212,255,0.35);
+                        box-shadow: 0 0 25px rgba(127,212,255,0.2); margin-bottom: 16px;">
+                        <source src="@Model.Foto" type="video/mp4" />
+                    </video>
+                }
+                else
+                {
+                    <img src="@Model.Foto" alt="Foto"
+                         style="width: 160px; height: 160px; object-fit: cover; border-radius: 50%;
+                    border: 3px solid rgba(127,212,255,0.35);
+                    box-shadow: 0 0 25px rgba(127,212,255,0.2); margin-bottom: 16px;" />
+                }
             }
-            else
-            {
-                <div style="width: 160px; height: 160px; border-radius: 50%;
-                    background: linear-gradient(135deg, #0a1628, #1a3a5c);
-                    display: flex; align-items: center; justify-content: center;
-                    font-size: 48px; margin-bottom: 16px;">
-                    👤
-                </div>
-            }
-            <h2 style="color: #7fd4ff; margin-bottom: 6px;">@Model.NomeCompleto</h2>
-            <span style="background: rgba(127,212,255,0.12); color: #7fd4ff;
-                border: 1px solid rgba(127,212,255,0.25); border-radius: 20px;
-                font-size: 12px; font-weight: 700; padding: 4px 14px;
-                text-transform: uppercase; letter-spacing: 0.5px;">
-                @Model.Especialidade
-            </span>
         </div>
 
         <div class="evento-card-body">

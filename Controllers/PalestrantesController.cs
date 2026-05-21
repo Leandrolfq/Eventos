@@ -57,7 +57,7 @@ namespace Eventos.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[Authorize(Roles = "Admin")]
-		public async Task<IActionResult> Create([Bind("Id,NomeCompleto,Empresa,Especialidade,MiniBiografia")] Palestrante palestrante, IFormFile Foto)
+		public async Task<IActionResult> Create([Bind("Id,NomeCompleto,Empresa,Cargo,Especialidade,MiniBiografia")] Palestrante palestrante, IFormFile Foto)
 		{
 			ModelState.Remove("Foto");
 			if (ModelState.IsValid)
@@ -96,7 +96,7 @@ namespace Eventos.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[Authorize(Roles = "Admin")]
-		public async Task<IActionResult> Edit(int id, [Bind("Id,NomeCompleto,Empresa,Especialidade,MiniBiografia,Foto")] Palestrante palestrante, IFormFile? FotoFile)
+		public async Task<IActionResult> Edit(int id, [Bind("Id,NomeCompleto,Empresa,Cargo,Especialidade,MiniBiografia,Foto")] Palestrante palestrante, IFormFile? FotoFile)
 		{
 			if (id != palestrante.Id) return NotFound();
 
