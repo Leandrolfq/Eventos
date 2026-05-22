@@ -1,16 +1,20 @@
 ﻿
+@model IEnumerable<Eventos.Models.Evento>
+
 @{
     ViewData["Title"] = "Evento LPQJ";
+
+    var ultimosEventos = Model
+        .OrderByDescending(e => e.Data)
+        .Take(10)
+        .ToList();
 }
 
 <style>
-    /* =========================
-               ANIMAÇÕES
-            ========================= */
     @@keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(25px);
         }
 
         to {
@@ -29,275 +33,208 @@
         }
     }
 
-    @@keyframes float {
-        0%, 100% {
-            transform: translateY(0px);
-        }
 
-        50% {
-            transform: translateY(-10px);
-        }
+    body {
+        background: #000 !important;
     }
 
-    /* =========================
-               PÁGINA HOME
-            ========================= */
     .home-page {
-        min-height: 90vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 40px 20px;
-        animation: fadeInUp 1.2s ease;
-        position: relative;
-        overflow: hidden;
+        min-height: 100vh;
+        padding: 25px 15px;
+        animation: fadeInUp 1s ease;
     }
 
-        /* Efeito de brilho no fundo */
-        .home-page::before {
-            content: "";
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(127, 212, 255, 0.15), transparent 70%);
-            top: 10%;
-            left: 5%;
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-            z-index: 0;
-        }
-
-        .home-page::after {
-            content: "";
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(60, 174, 255, 0.12), transparent 70%);
-            bottom: 5%;
-            right: 10%;
-            border-radius: 50%;
-            animation: float 8s ease-in-out infinite;
-            z-index: 0;
-        }
-
-    /* =========================
-               CARD PRINCIPAL
-            ========================= */
-    .home-card {
-        position: relative;
-        z-index: 1;
-        max-width: 1000px;
-        width: 100%;
-        padding: 70px 60px;
-        border-radius: 30px;
+    /* HERO */
+    .hero-card {
+        max-width: 900px;
+        margin: auto;
+        padding: 45px 35px;
+        border-radius: 24px;
         background: rgba(8, 20, 45, 0.88);
-        border: 1px solid rgba(127, 212, 255, 0.20);
-        box-shadow: 0 0 30px rgba(127, 212, 255, 0.08), 0 20px 60px rgba(0, 0, 0, 0.55);
-        backdrop-filter: blur(12px);
+        border: 1px solid rgba(127,212,255,0.18);
+        box-shadow: 0 0 25px rgba(127,212,255,0.08);
+        text-align: center;
     }
 
-    /* =========================
-               LOGO/ÍCONE
-            ========================= */
     .home-icon {
-        font-size: 4rem;
-        margin-bottom: 20px;
-        animation: float 4s ease-in-out infinite;
+        font-size: 2.8rem;
+        margin-bottom: 15px;
     }
 
-    /* =========================
-               TÍTULO PRINCIPAL
-            ========================= */
     .home-title {
-        font-size: 4rem;
+        font-size: 2.8rem;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 4px;
-        margin-bottom: 25px;
+        letter-spacing: 3px;
+        margin-bottom: 18px;
         background: linear-gradient(90deg, #7fd4ff, #ffffff, #7fd4ff);
         background-size: 200% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         animation: shine 4s linear infinite;
-        text-shadow: 0 0 25px rgba(127, 212, 255, 0.2);
     }
 
-    /* =========================
-               NOME DO EVENTO
-            ========================= */
     .event-name {
         display: inline-block;
-        margin-bottom: 30px;
-        padding: 10px 25px;
+        margin-bottom: 18px;
+        padding: 8px 20px;
         border-radius: 999px;
-        font-size: 1rem;
+        font-size: 0.9rem;
         font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
         color: #7fd4ff;
-        background: rgba(127, 212, 255, 0.12);
-        border: 1px solid rgba(127, 212, 255, 0.25);
-        box-shadow: 0 0 20px rgba(127, 212, 255, 0.08);
+        background: rgba(127,212,255,0.10);
+        border: 1px solid rgba(127,212,255,0.20);
     }
 
-    /* =========================
-               TEXTO
-            ========================= */
     .home-text {
         color: #e8f8ff;
-        font-size: 1.3rem;
-        line-height: 1.9;
-        max-width: 780px;
-        margin: 0 auto 15px auto;
+        font-size: 1rem;
+        line-height: 1.7;
+        max-width: 700px;
+        margin: auto;
     }
 
-    .home-subtext {
-        color: #cfefff;
-        font-size: 1.1rem;
-        line-height: 1.8;
-        max-width: 720px;
-        margin: 0 auto 40px auto;
-    }
-
-    /* =========================
-               BOTÕES
-            ========================= */
+    /* BOTÕES */
     .home-buttons {
+        margin-top: 28px;
         display: flex;
         justify-content: center;
-        gap: 20px;
+        gap: 15px;
         flex-wrap: wrap;
-        margin-top: 20px;
     }
 
     .home-btn {
-        display: inline-block;
-        padding: 16px 40px;
-        border-radius: 14px;
+        padding: 12px 24px;
+        border-radius: 12px;
         background: linear-gradient(90deg, #3caeff, #7fd4ff);
         color: #001426 !important;
-        font-size: 1rem;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        font-size: 0.9rem;
         text-decoration: none;
-        border: none;
-        box-shadow: 0 0 25px rgba(127, 212, 255, 0.18);
-        transition: all 0.3s ease;
+        transition: 0.3s ease;
     }
 
         .home-btn:hover {
-            transform: translateY(-3px) scale(1.04);
-            box-shadow: 0 0 35px rgba(127, 212, 255, 0.35);
-            color: #001426 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(127,212,255,0.30);
         }
 
-    .home-btn-secondary {
-        background: transparent;
-        color: #7fd4ff !important;
-        border: 2px solid #7fd4ff;
-        box-shadow: none;
-    }
-
-        .home-btn-secondary:hover {
-            background: rgba(127, 212, 255, 0.10);
-            color: #ffffff !important;
-            box-shadow: 0 0 25px rgba(127, 212, 255, 0.20);
-        }
-
-    /* =========================
-               ESTATÍSTICAS
-            ========================= */
-    .home-stats {
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        flex-wrap: wrap;
-        margin-top: 50px;
-    }
-
-    .stat-card {
-        min-width: 160px;
-        padding: 20px 25px;
-        border-radius: 18px;
-        background: rgba(127, 212, 255, 0.06);
-        border: 1px solid rgba(127, 212, 255, 0.12);
-    }
-
-    .stat-number {
+    /* TÍTULO EVENTOS */
+    .section-title {
+        margin-top: 55px;
+        margin-bottom: 25px;
+        text-align: center;
         font-size: 2rem;
         font-weight: 900;
         color: #7fd4ff;
-        display: block;
     }
 
-    .stat-label {
-        font-size: 0.9rem;
+    /* GRID */
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+    }
+
+    /* CARD EVENTO */
+    .event-card {
+        background: rgba(8, 20, 45, 0.88);
+        border: 1px solid rgba(127,212,255,0.15);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: 0.3s ease;
+    }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px rgba(127,212,255,0.15);
+        }
+
+    .event-banner {
+        width: 100%;
+        height: 170px;
+        object-fit: cover;
+    }
+
+    .event-content {
+        padding: 18px;
+    }
+
+    .event-title {
+        color: #7fd4ff;
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .event-date {
         color: #cfefff;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        font-size: 0.9rem;
     }
 
-    /* =========================
-               RESPONSIVO
-            ========================= */
-    @@media (max-width: 768px) {
-        .home-card {
-            padding: 50px 30px;
+    .event-btn {
+        margin-top: 15px;
+        display: inline-block;
+        padding: 9px 16px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, #3caeff, #7fd4ff);
+        color: #001426 !important;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: 0.3s ease;
+    }
+
+        .event-btn:hover {
+            transform: scale(1.03);
+        }
+
+    /* RESPONSIVO */
+    @@media(max-width: 768px) {
+
+        .hero-card {
+            padding: 35px 20px;
         }
 
         .home-title {
-            font-size: 2.5rem;
-            letter-spacing: 2px;
+            font-size: 2rem;
         }
 
-        .home-text {
-            font-size: 1.1rem;
+        .section-title {
+            font-size: 1.6rem;
         }
 
-        .home-subtext {
-            font-size: 1rem;
-        }
-
-        .home-buttons {
-            flex-direction: column;
-        }
-
-        .home-btn {
-            width: 100%;
+        .event-banner {
+            height: 150px;
         }
     }
 </style>
 
 <div class="home-page">
-    <div class="home-card">
 
-        <!-- Ícone -->
+    
+    <div class="hero-card">
+
         <div class="home-icon">😎</div>
 
-        <!-- Título -->
-        <h1 class="home-title">Palestras Feitas pra Você</h1>
+        <h1 class="home-title">
+            Palestras Feitas pra Você
+        </h1>
 
-        <!-- Nome do Evento -->
         <div class="event-name">
             Evento LPQJ
         </div>
 
-        <!-- Texto principal -->
         <p class="home-text">
             Participe das palestras disponíveis no momento e escolha aquela
             que mais chamar sua atenção.
         </p>
 
-        <!-- Texto secundário -->
-        <p class="home-subtext">
-            Explore eventos exclusivos, conheça palestrantes renomados
-            e faça sua inscrição em poucos cliques.
-        </p>
 
-        <!-- Botões -->
+
         <div class="home-buttons">
+
             <a asp-controller="Palestrantes"
                asp-action="Index"
                class="home-btn">
@@ -306,28 +243,52 @@
 
             <a asp-controller="Eventos"
                asp-action="Index"
-               class="home-btn home-btn-secondary">
+               class="home-btn">
                 Ver Eventos
             </a>
+
         </div>
+    </div>
 
-        <!-- Estatísticas -->
-        <div class="home-stats">
-            <div class="stat-card">
-                <span class="stat-number">10+</span>
-                <span class="stat-label">Palestras</span>
-            </div>
+    <!-- EVENTOS -->
+    <h2 class="section-title">
+        Últimos Eventos
+    </h2>
 
-            <div class="stat-card">
-                <span class="stat-number">20+</span>
-                <span class="stat-label">Palestrantes</span>
-            </div>
+    <div class="events-grid">
 
-            <div class="stat-card">
-                <span class="stat-number">100%</span>
-                <span class="stat-label">Gratuito</span>
+        @foreach (var item in ultimosEventos)
+        {
+            <div class="event-card">
+
+                @if (!string.IsNullOrEmpty(item.Banner))
+                {
+                    <img src="@item.Banner"
+                         class="event-banner"
+                         alt="Banner do evento" />
+                }
+
+                <div class="event-content">
+
+                    <div class="event-title">
+                        @item.Nome
+                    </div>
+
+                    <div class="event-date">
+                        📅 @item.Data.ToString("dd/MM/yyyy")
+                    </div>
+
+                    <a asp-controller="Eventos"
+                       asp-action="Details"
+                       asp-route-id="@item.Id"
+                       class="event-btn">
+                        Ver Detalhes
+                    </a>
+
+                </div>
             </div>
-        </div>
+        }
 
     </div>
+
 </div>

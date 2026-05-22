@@ -1,89 +1,430 @@
-﻿@model IEnumerable<Eventos.Models.Palestrante>
+﻿
+@model IEnumerable<Eventos.Models.Palestrante>
+
 @{
     ViewData["Title"] = "Palestrantes";
 }
+
+<style>
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes glowPulse {
+        0% {
+            box-shadow: 0 0 10px rgba(127,212,255,0.10);
+        }
+
+        50% {
+            box-shadow: 0 0 35px rgba(127,212,255,0.35);
+        }
+
+        100% {
+            box-shadow: 0 0 10px rgba(127,212,255,0.10);
+        }
+    }
+
+    @@keyframes floating {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-8px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    @@keyframes shine {
+        0% {
+            background-position: 0% center;
+        }
+
+        100% {
+            background-position: 200% center;
+        }
+    }
+
+    body {
+        background: #000 !important;
+    }
+
+    .persona3-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        background: linear-gradient(90deg, #7fd4ff, #ffffff, #7fd4ff);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 4s linear infinite;
+    }
+
+    /* CARD MENOR */
+    .evento-card {
+        background: rgba(8, 20, 45, 0.92);
+        border: 1px solid rgba(127,212,255,0.15);
+        border-radius: 22px;
+        overflow: hidden;
+        position: relative;
+        transition: all 0.4s ease;
+        animation: fadeInUp 0.8s ease forwards;
+        backdrop-filter: blur(10px);
+        max-width: 320px;
+        margin: auto;
+    }
+
+        .evento-card::before {
+            content: "";
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, rgba(127,212,255,0.18), transparent 70%);
+            border-radius: 50%;
+            transition: 0.5s;
+        }
+
+        .evento-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(127,212,255,0.35);
+            animation: glowPulse 2s infinite;
+        }
+
+            .evento-card:hover::before {
+                transform: scale(1.2);
+            }
+
+    /* TITULO MENOR */
+    .evento-card-title {
+        color: #7fd4ff;
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        letter-spacing: 1px;
+        text-align: center;
+    }
+
+    .evento-card-body {
+        padding: 18px;
+    }
+
+    .evento-card-meta {
+        color: #cfefff;
+        margin-bottom: 10px;
+        font-size: 0.85rem;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        text-align: center;
+    }
+
+    /* TEXTO MENOR */
+    .evento-card-desc {
+        color: #e8f8ff;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        text-align: center;
+        min-height: 60px;
+    }
+
+    .evento-card-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+    }
+
+    /* BOTÕES MENORES */
+    .btn-acao {
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-decoration: none;
+        transition: 0.3s ease;
+    }
+
+    .btn-editar {
+        border: 1px solid #7fd4ff;
+        color: #7fd4ff;
+    }
+
+        .btn-editar:hover {
+            background: #7fd4ff;
+            color: #001426;
+            transform: scale(1.05);
+        }
+
+    .btn-detalhes {
+        background: linear-gradient(90deg, #3caeff, #7fd4ff);
+        color: #001426;
+        border: none;
+    }
+
+        .btn-detalhes:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(127,212,255,0.35);
+            color: #001426;
+        }
+
+    .btn-excluir {
+        background: #d94a4a;
+        color: white;
+        border: none;
+    }
+
+        .btn-excluir:hover {
+            background: #ff4a4a;
+            transform: scale(1.05);
+        }
+
+    .form-control {
+        background: rgba(8,20,45,0.9);
+        border: 1px solid rgba(127,212,255,0.20);
+        color: #fff;
+        border-radius: 14px;
+        padding: 12px;
+    }
+
+        .form-control:focus {
+            background: rgba(8,20,45,1);
+            color: #fff;
+            border-color: #7fd4ff;
+            box-shadow: 0 0 20px rgba(127,212,255,0.20);
+        }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #3caeff, #7fd4ff);
+        border: none;
+        font-weight: 800;
+        border-radius: 14px;
+        color: #001426;
+        transition: 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(127,212,255,0.25);
+        }
+
+    .persona3-btn {
+        background: linear-gradient(90deg, #3caeff, #7fd4ff);
+        color: #001426 !important;
+        border-radius: 14px;
+        padding: 12px 20px;
+        text-decoration: none;
+        font-weight: 900;
+        letter-spacing: 1px;
+        transition: 0.3s ease;
+    }
+
+        .persona3-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(127,212,255,0.35);
+        }
+
+    /* FOTO MENOR */
+    .foto-animada {
+        animation: floating 4s ease-in-out infinite;
+        transition: 0.4s ease;
+        width: 110px !important;
+        height: 110px !important;
+    }
+
+        .foto-animada:hover {
+            transform: scale(1.08);
+        }
+
+    /* GRID MENOR */
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+
+    @@media(max-width: 992px) {
+        .cards-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media(max-width: 768px) {
+        .cards-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .persona3-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+
 <div class="fade-in" style="padding: 30px 0;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <h1 class="persona3-title">Palestrantes</h1>
+
         @if (User.IsInRole("Admin"))
         {
-            <a asp-action="Create" class="persona3-btn">+ Novo Palestrante</a>
+            <a asp-action="Create" class="persona3-btn">
+                + Novo Palestrante
+            </a>
         }
     </div>
 
-    <form method="get" asp-action="Index" class="row g-3 mb-4">
+    <form method="get" asp-action="Index" class="row g-3 mb-5">
         <div class="col-md-4">
-            <input type="text" name="nome" value="@ViewBag.NomeBusca"
-                   class="form-control" placeholder="Nome do palestrante" />
+            <input type="text"
+                   name="nome"
+                   value="@ViewBag.NomeBusca"
+                   class="form-control"
+                   placeholder="Nome do palestrante" />
         </div>
+
         <div class="col-md-3">
-            <input type="text" name="empresa" value="@ViewBag.EmpresaBusca"
-                   class="form-control" placeholder="Empresa" />
+            <input type="text"
+                   name="empresa"
+                   value="@ViewBag.EmpresaBusca"
+                   class="form-control"
+                   placeholder="Empresa" />
         </div>
+
         <div class="col-md-3">
-            <input type="text" name="especialidade" value="@ViewBag.EspecialidadeBusca"
-                   class="form-control" placeholder="Especialidade" />
+            <input type="text"
+                   name="especialidade"
+                   value="@ViewBag.EspecialidadeBusca"
+                   class="form-control"
+                   placeholder="Especialidade" />
         </div>
+
         <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+            <button type="submit" class="btn btn-primary w-100 h-100">
+                Buscar
+            </button>
         </div>
     </form>
 
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+    <div class="cards-grid">
+
         @foreach (var item in Model)
         {
             <div class="evento-card">
-                <div style="display: flex; flex-direction: column; align-items: center; padding: 24px 16px 12px;">
+
+                <div style="display:flex; flex-direction:column; align-items:center; padding:25px 18px 8px;">
+
                     @if (!string.IsNullOrEmpty(item.Foto))
                     {
                         @if (item.Foto.EndsWith(".mp4") || item.Foto.EndsWith(".webm"))
                         {
-                            <video autoplay loop muted playsinline
-                                   style="width: 130px; height: 130px; object-fit: cover; border-radius: 50%;
-                                border: 3px solid rgba(127,212,255,0.35);
-                                box-shadow: 0 0 20px rgba(127,212,255,0.15); margin-bottom: 12px;">
+                            <video autoplay
+                                   loop
+                                   muted
+                                   playsinline
+                                   class="foto-animada"
+                                   style="object-fit:cover;
+                                                      border-radius:50%;
+                                                      border:3px solid rgba(127,212,255,0.35);
+                                                      box-shadow:0 0 25px rgba(127,212,255,0.20);
+                                                      margin-bottom:15px;">
+
                                 <source src="@item.Foto" type="video/mp4" />
                             </video>
                         }
                         else
                         {
-                            <img src="@item.Foto" alt="Foto"
-                                 style="width: 130px; height: 130px; object-fit: cover; border-radius: 50%;
-                            border: 3px solid rgba(127,212,255,0.35);
-                            box-shadow: 0 0 20px rgba(127,212,255,0.15); margin-bottom: 12px;" />
+                            <img src="@item.Foto"
+                                 alt="Foto"
+                                 class="foto-animada"
+                                 style="object-fit:cover;
+                                                    border-radius:50%;
+                                                    border:3px solid rgba(127,212,255,0.35);
+                                                    box-shadow:0 0 25px rgba(127,212,255,0.20);
+                                                    margin-bottom:15px;" />
                         }
                     }
-                    <div class="evento-card-title" style="text-align: center;">@item.NomeCompleto</div>
-                    <span style="background: rgba(127,212,255,0.12); color: #7fd4ff;
-                        border: 1px solid rgba(127,212,255,0.25); border-radius: 20px;
-                        font-size: 11px; font-weight: 700; padding: 4px 12px;
-                        text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+
+                    <div class="evento-card-title">
+                        @item.NomeCompleto
+                    </div>
+
+                    <span style="
+                            background: rgba(127,212,255,0.12);
+                            color: #7fd4ff;
+                            border: 1px solid rgba(127,212,255,0.25);
+                            border-radius: 20px;
+                            font-size: 10px;
+                            font-weight: 700;
+                            padding: 5px 12px;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            margin-bottom: 8px;">
+
                         @item.Especialidade
                     </span>
                 </div>
-                <div class="evento-card-body" style="padding-top: 0;">
+
+                <div class="evento-card-body">
+
                     <div class="evento-card-meta">
                         <span>🏢 @item.Empresa</span>
                     </div>
+
                     <div class="evento-card-desc">
                         @{
                             var bio = item.MiniBiografia ?? "";
                             @(bio.Length > 80 ? bio.Substring(0, 80) + "..." : bio)
                         }
                     </div>
+
                     <div class="evento-card-actions">
+
                         @if (User.IsInRole("Admin"))
                         {
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn-acao btn-editar">Editar</a>
+                            <a asp-action="Edit"
+                               asp-route-id="@item.Id"
+                               class="btn-acao btn-editar">
+                                Editar
+                            </a>
                         }
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn-acao btn-detalhes">Detalhes</a>
+
+                        <a asp-action="Details"
+                           asp-route-id="@item.Id"
+                           class="btn-acao btn-detalhes">
+                            Detalhes
+                        </a>
+
                         @if (User.IsInRole("Admin"))
                         {
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn-acao btn-excluir">Excluir</a>
+                            <a asp-action="Delete"
+                               asp-route-id="@item.Id"
+                               class="btn-acao btn-excluir">
+                                Excluir
+                            </a>
                         }
+
                     </div>
                 </div>
+
             </div>
         }
     </div>
 </div>
+
