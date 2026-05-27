@@ -18,6 +18,7 @@ namespace Eventos.Data
 		public DbSet<Palestrante> Palestrante { get; set; } = default!;
 		public DbSet<EventoPalestrante> EventoPalestrantes { get; set; } = default!;
 		public DbSet<EventoCategoria> EventoCategorias { get; set; } = default!;
+		public DbSet<Inscricao> Inscricoes { get; set; } = default!;
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

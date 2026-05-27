@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Eventos.Data;
 using Eventos.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims; // Adicionado para buscar o ID do usuário
 
 namespace Eventos.Controllers
 {
@@ -38,6 +39,20 @@ namespace Eventos.Controllers
 			if (palestranteId.HasValue)
 				eventos = eventos.Where(e => e.EventoPalestrantes.Any(ep => ep.PalestranteId == palestranteId));
 
+			// --- LÓGICA DE INSCRIÇÃO DIRETA NO CARD ---
+			var eventosInscritosIds = new List<int>();
+			if (User.Identity.IsAuthenticated)
+			{
+				var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+				// Busca a lista de IDs dos eventos que este usuário já se inscreveu
+				eventosInscritosIds = await _context.Inscricoes
+					.Where(i => i.IdentityUserId == userId)
+					.Select(i => i.EventoId)
+					.ToListAsync();
+			}
+			ViewBag.EventosInscritosIds = eventosInscritosIds;
+			// ------------------------------------------
+
 			ViewBag.Categorias = await _context.Categoria.ToListAsync();
 			ViewBag.Palestrantes = await _context.Palestrante.ToListAsync();
 			ViewBag.NomeBusca = nome;
@@ -61,6 +76,16 @@ namespace Eventos.Controllers
 
 			if (evento == null)
 				return NotFound();
+
+			// Lógica para verificar se o usuário logado já está inscrito
+			bool jaInscrito = false;
+			if (User.Identity.IsAuthenticated)
+			{
+				var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+				jaInscrito = await _context.Inscricoes
+					.AnyAsync(i => i.EventoId == id && i.IdentityUserId == userId);
+			}
+			ViewBag.JaInscrito = jaInscrito;
 
 			return View(evento);
 		}
@@ -193,6 +218,48 @@ namespace Eventos.Controllers
 
 			await _context.SaveChangesAsync();
 			return RedirectToAction(nameof(Index));
+		}
+
+		// POST: Eventos/Inscrever
+		[HttpPost]
+		[Authorize]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Inscrever(int eventoId)
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			if (string.IsNullOrEmpty(userId))
+			{
+				return Challenge();
+			}
+
+			var eventoExists = await _context.Evento.AnyAsync(e => e.Id == eventoId);
+			if (!eventoExists)
+			{
+				return NotFound();
+			}
+
+			var jaInscrito = await _context.Inscricoes
+				.AnyAsync(i => i.EventoId == eventoId && i.IdentityUserId == userId);
+
+			if (jaInscrito)
+			{
+				TempData["MensagemErro"] = "Você já está inscrito neste evento!";
+				return RedirectToAction(nameof(Index)); // Modificado para voltar para a listagem
+			}
+
+			var inscricao = new Inscricao
+			{
+				EventoId = eventoId,
+				IdentityUserId = userId,
+				DataInscricao = DateTime.Now
+			};
+
+			_context.Inscricoes.Add(inscricao);
+			await _context.SaveChangesAsync();
+
+			TempData["MensagemSucesso"] = "Inscrição realizada com sucesso!";
+			return RedirectToAction(nameof(Index)); // Modificado para voltar para a listagem
 		}
 
 		private bool EventoExists(int id)
