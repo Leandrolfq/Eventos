@@ -4,10 +4,23 @@ using Eventos.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<EventosContext>(options =>
-	options.UseSqlServer(
-		builder.Configuration.GetConnectionString("EventosContext")
-		?? throw new InvalidOperationException("Connection string 'EventosContext' not found.")));
+// Pega a string de conexão configurada
+var connectionString = builder.Configuration.GetConnectionString("EventosContext")
+	?? throw new InvalidOperationException("Connection string 'EventosContext' not found.");
+
+// LÓGICA DE BANCO INTELIGENTE: Local (SQL Server) vs Nuvem (SQLite)
+if (builder.Environment.IsDevelopment())
+{
+	// Usa o seu SQL Server local quando você roda no seu PC
+	builder.Services.AddDbContext<EventosContext>(options =>
+		options.UseSqlServer(connectionString));
+}
+else
+{
+	// Usa SQLite automaticamente quando o projeto vai para o Render
+	builder.Services.AddDbContext<EventosContext>(options =>
+		options.UseSqlite(connectionString));
+}
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
@@ -36,13 +49,22 @@ app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.MapRazorPages(); // necessário para as páginas de login do Identity
+app.MapRazorPages();
 
-// Seed do usuário admin
+// Bloco para garantir a criação do banco SQLite e rodar o Seed do Admin
 using (var scope = app.Services.CreateScope())
 {
-	var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-	var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+	var services = scope.ServiceProvider;
+	var context = services.GetRequiredService<EventosContext>();
+
+	// CRIAÇÃO AUTOMÁTICA DO BANCO: Garante que o arquivo do banco nasça no Render com as tabelas
+	if (!app.Environment.IsDevelopment())
+	{
+		context.Database.EnsureCreated();
+	}
+
+	var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+	var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
 	// Cria a role Admin se não existir
 	if (!await roleManager.RoleExistsAsync("Admin"))
@@ -66,9 +88,10 @@ using (var scope = app.Services.CreateScope())
 
 	// Atribui a role Admin ao usuário
 	var adminUser = await userManager.FindByEmailAsync(email);
-	if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+	if (adminUser != null && !await userManager.IsInRoleAsync(adminUser, "Admin"))
 	{
 		await userManager.AddToRoleAsync(adminUser, "Admin");
 	}
 }
+
 app.Run();
