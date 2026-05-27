@@ -28,11 +28,11 @@
     </div>
 
     <form method="get" asp-action="Index" class="row g-3 mb-4">
-        <div class="col-md-4">
+        <div class="col-12 col-md-4">
             <input type="text" name="nome" value="@ViewBag.NomeBusca"
                    class="form-control" placeholder="Nome do evento" />
         </div>
-        <div class="col-md-3">
+        <div class="col-12 col-sm-6 col-md-3">
             <select name="categoriaId" class="form-select">
                 <option value="">-- Todas as categorias --</option>
                 @foreach (var cat in (List<Eventos.Models.Categoria>)ViewBag.Categorias)
@@ -41,7 +41,7 @@
                 }
             </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-12 col-sm-6 col-md-3">
             <select name="palestranteId" class="form-select">
                 <option value="">-- Todos os palestrantes --</option>
                 @foreach (var pal in (List<Eventos.Models.Palestrante>)ViewBag.Palestrantes)
@@ -50,55 +50,59 @@
                 }
             </select>
         </div>
-        <div class="col-md-2">
+        <div class="col-12 col-md-2">
             <button type="submit" class="btn btn-primary w-100">Buscar</button>
         </div>
     </form>
 
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+    <div class="row g-4">
         @foreach (var item in Model)
         {
-            <div class="evento-card">
-                <div class="evento-card-banner">
-                    @if (!string.IsNullOrEmpty(item.Banner))
-                    {
-                        <img src="@item.Banner" alt="Banner" />
-                    }
-                    else
-                    {
-                        <div class="evento-card-banner-placeholder">📅</div>
-                    }
-                </div>
-                <div class="evento-card-body d-flex flex-column justify-content-between">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="evento-card h-100 d-flex flex-column justify-content-between">
                     <div>
-                        <div class="evento-card-title">@item.Nome</div>
-                        <div class="evento-card-meta">
-                            <span>📅 @item.Data.ToString("dd/MM/yyyy")</span>
-                            <span>🕖 @item.Horario</span>
-                            <span>📍 @item.Local</span>
+                        <div class="evento-card-banner">
+                            @if (!string.IsNullOrEmpty(item.Banner))
+                            {
+                                <img src="@item.Banner" alt="Banner" style="width: 100%; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="evento-card-banner-placeholder">📅</div>
+                            }
                         </div>
-                        @if (item.EventoCategorias != null && item.EventoCategorias.Any())
-                        {
-                            <div style="margin: 8px 0; display: flex; flex-wrap: wrap; gap: 5px;">
-                                @foreach (var ec in item.EventoCategorias)
-                                {
-                                    <span style="background: rgba(127, 212, 255, 0.15); color: #7fd4ff; padding: 2px 8px; border-radius: 12px; font-size: 11px; border: 1px solid rgba(127, 212, 255, 0.3);">
-                                        @ec.Categoria.Nome
-                                    </span>
+                        <div class="evento-card-body">
+                            <div class="evento-card-title fw-bold">@item.Nome</div>
+                            <div class="evento-card-meta mb-2">
+                                <span>📅 @item.Data.ToString("dd/MM/yyyy")</span><br />
+                                <span>🕖 @item.Horario</span><br />
+                                <span>📍 @item.Local</span>
+                            </div>
+
+                            @if (item.EventoCategorias != null && item.EventoCategorias.Any())
+                            {
+                                <div class="mb-2 d-flex flex-wrap gap-1">
+                                    @foreach (var ec in item.EventoCategorias)
+                                    {
+                                        <span style="background: rgba(127, 212, 255, 0.15); color: #7fd4ff; padding: 2px 8px; border-radius: 12px; font-size: 11px; border: 1px solid rgba(127, 212, 255, 0.3);">
+                                            @ec.Categoria.Nome
+                                        </span>
+                                    }
+                                </div>
+                            }
+
+                            <div class="evento-card-desc">
+                                @{
+                                    var desc = item.Descricao ?? "";
+                                    @(desc.Length > 60 ? desc.Substring(0, 60) + "..." : desc)
                                 }
                             </div>
-                        }
-                        <div class="evento-card-desc">
-                            @{
-                                var desc = item.Descricao ?? "";
-                                @(desc.Length > 60 ? desc.Substring(0, 60) + "..." : desc)
-                            }
                         </div>
                     </div>
 
-                    <div class="mt-3">
+                    <div class="p-3 mt-auto">
                         <div class="mb-2 w-100">
-                            @if (User.Identity.IsAuthenticated)
+                            @if (User.Identity != null && User.Identity.IsAuthenticated)
                             {
                                 var inscritoIds = ViewBag.EventosInscritosIds as List<int>;
                                 if (inscritoIds != null && inscritoIds.Contains(item.Id))
@@ -123,17 +127,17 @@
                             }
                         </div>
 
-                        <div class="evento-card-actions d-flex gap-1 justify-content-between">
+                        <div class="evento-card-actions d-flex flex-wrap gap-1 justify-content-between">
                             @if (User.IsInRole("Admin"))
                             {
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn-acao btn-editar" style="flex: 1; text-align: center;">Editar</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn-acao btn-editar text-center flex-grow-1" style="font-size: 12px; padding: 5px;">Editar</a>
                             }
 
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn-acao btn-detalhes" style="flex: 2; text-align: center;">Detalhes</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn-acao btn-detalhes text-center flex-grow-1" style="font-size: 12px; padding: 5px; min-width: 70px;">Detalhes</a>
 
                             @if (User.IsInRole("Admin"))
                             {
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn-acao btn-excluir" style="flex: 1; text-align: center;">Excluir</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn-acao btn-excluir text-center flex-grow-1" style="font-size: 12px; padding: 5px;">Excluir</a>
                             }
                         </div>
                     </div>
