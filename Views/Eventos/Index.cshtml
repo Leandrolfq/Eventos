@@ -60,6 +60,7 @@
         {
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="evento-card h-100 d-flex flex-column justify-content-between">
+
                     <div>
                         <div class="evento-card-banner">
                             @if (!string.IsNullOrEmpty(item.Banner))
@@ -111,7 +112,7 @@
                                 }
                                 else
                                 {
-                                    <form asp-action="Inscrever" asp-controller="Eventos" method="post" class="w-100">
+                                    <form asp-action="Inscrever" asp-controller="Eventos" method="post" class="w-100" id="form-inscrever-@item.Id">
                                         <input type="hidden" name="eventoId" value="@item.Id" />
                                         <button type="submit" class="btn btn-success w-100 btn-sm" style="background-color: #198754; border: none;">Inscrever-se Rápido</button>
                                     </form>
