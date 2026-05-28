@@ -10,6 +10,7 @@ namespace Eventos.Models
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+        [Required]
         public string Assunto { get; set; }
         [Required]
         public string Mensagem { get; set; }

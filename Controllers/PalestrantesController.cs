@@ -22,14 +22,28 @@ namespace Eventos.Controllers
 
 		// GET: Palestrantes - público para todos
 		[AllowAnonymous]
-		public async Task<IActionResult> Index()
+		public async Task<IActionResult> Index(string? nome, string? empresa, string? especialidade)
 		{
-			return View(await _context.Palestrante.ToListAsync());
+			var palestrantes = _context.Palestrante.AsQueryable();
+
+			if (!string.IsNullOrEmpty(nome))
+				palestrantes = palestrantes.Where(p => p.NomeCompleto.Contains(nome));
+
+			if (!string.IsNullOrEmpty(empresa))
+				palestrantes = palestrantes.Where(p => p.Empresa.Contains(empresa));
+
+			if (!string.IsNullOrEmpty(especialidade))
+				palestrantes = palestrantes.Where(p => p.Especialidade.Contains(especialidade));
+
+			ViewBag.NomeBusca = nome;
+			ViewBag.EmpresaBusca = empresa;
+			ViewBag.EspecialidadeBusca = especialidade;
+
+			return View(await palestrantes.ToListAsync());
 		}
 
-		// GET: Palestrantes/Details/5 - público para todos
+		// GET: Palestrantes/Details/5
 		[AllowAnonymous]
-		
 		public async Task<IActionResult> Details(int? id)
 		{
 			if (id == null)

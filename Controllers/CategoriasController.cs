@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Eventos.Controllers
 {
-	[Authorize]
+	[Authorize(Roles = "Admin")]
 	public class CategoriasController : Controller
 	{
 		private readonly EventosContext _context;
